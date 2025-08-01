@@ -12,6 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Clan_Salgueiro"
         tools:targetApi="31" >
+
         <activity
             android:name=".SplashActivity"
             android:exported="true"
@@ -25,6 +26,19 @@
 
         <activity android:name=".MainActivity"
             android:exported="true"/>
+
+        <activity android:name=".BilboActivity"
+            android:exported="true"/>
+
+        <activity android:name=".TabataActivity"
+            android:exported="true"/>
+
+        <activity android:name=".EmomActivity"
+            android:exported="true"/>
+
+        <activity android:name=".AmrapActivity"
+            android:exported="true"/>
+
     </application>
 
 </manifest>
