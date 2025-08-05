@@ -1,6 +1,7 @@
 package com.example.clan_salgueiro.Emom
 
-import android.content.IntentSender
+import android.content.Intent
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.widget.ProgressBar
@@ -22,6 +23,8 @@ class EmomActivity: AppCompatActivity() {
     private var rondasTotales = 0
     private var milisPorRonda: Long = 0
     private var cuentaRegresiva: CountDownTimer? = null
+    private var sonidoRonda: MediaPlayer? = null
+    private var sonidoCompletado: MediaPlayer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +44,8 @@ class EmomActivity: AppCompatActivity() {
         val minutos = intent.getIntExtra("EMOM_MINUTOS", 0)
         val segundos = intent.getIntExtra("EMOM_SEGUNDOS", 0)
 
+        sonidoRonda = MediaPlayer.create(this, R.raw.alarm1)
+        sonidoCompletado = MediaPlayer.create(this, R.raw.victoria)
 
         rondasTotales = rondas
         milisPorRonda = ((minutos * 60) + segundos) * 1000L
@@ -58,7 +63,11 @@ class EmomActivity: AppCompatActivity() {
 
     private fun startEmomRound() {
         if (rondasRecorridas >= rondasTotales) {
+            sonidoCompletado?.start()
             Toast.makeText(this, "EMOM Terminado", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, PrevEmomActivity::class.java)
+            startActivity(intent)
+            finish()
             return
         }
 
@@ -79,6 +88,7 @@ class EmomActivity: AppCompatActivity() {
 
             override fun onFinish() {
                 barraProgreso.progress = barraProgreso.max
+                sonidoRonda?.start()
                 startEmomRound()
             }
         }.start()
@@ -93,6 +103,8 @@ class EmomActivity: AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         cuentaRegresiva?.cancel()
+        sonidoRonda?.release()
+        sonidoRonda = null
     }
 
 }
