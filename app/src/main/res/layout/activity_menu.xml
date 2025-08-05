@@ -16,6 +16,17 @@
         tools:context=".MainActivity"
         android:background="@drawable/degradado">
 
+        <ImageView
+            android:layout_width="400dp"
+            android:layout_height="500dp"
+            android:background="@drawable/imagen_alpha"
+
+            android:layout_marginTop="50dp"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar_menu"/>
+
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar_menu"
 

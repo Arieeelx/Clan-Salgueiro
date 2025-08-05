@@ -27,16 +27,19 @@
         <activity android:name=".MainActivity"
             android:exported="true"/>
 
-        <activity android:name=".BilboActivity"
+        <activity android:name=".Bilbo.BilboActivity"
             android:exported="true"/>
 
-        <activity android:name=".TabataActivity"
+        <activity android:name=".Tabata.TabataActivity"
             android:exported="true"/>
 
-        <activity android:name=".EmomActivity"
+        <activity android:name=".Emom.EmomActivity"
             android:exported="true"/>
 
-        <activity android:name=".AmrapActivity"
+        <activity android:name=".Emom.PrevEmomActivity"
+            android:exported="true"/>
+
+        <activity android:name=".Amrap.AmrapActivity"
             android:exported="true"/>
 
     </application>

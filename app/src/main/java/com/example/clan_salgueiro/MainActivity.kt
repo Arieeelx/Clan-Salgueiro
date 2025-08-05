@@ -7,6 +7,11 @@ import android.widget.Button
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
+import com.example.clan_salgueiro.Amrap.AmrapActivity
+import com.example.clan_salgueiro.Bilbo.BilboActivity
+import com.example.clan_salgueiro.Emom.EmomActivity
+import com.example.clan_salgueiro.Emom.PrevEmomActivity
+import com.example.clan_salgueiro.Tabata.TabataActivity
 import com.google.android.material.navigation.NavigationView
 
 class MainActivity : AppCompatActivity() {
@@ -65,7 +70,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
         botonEMOM.setOnClickListener {
-            val intent = Intent(this, EmomActivity::class.java)
+            val intent = Intent(this, PrevEmomActivity::class.java)
             startActivity(intent)
         }
         botonAMRAP.setOnClickListener {
