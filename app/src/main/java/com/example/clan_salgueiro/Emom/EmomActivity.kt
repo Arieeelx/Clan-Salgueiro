@@ -27,8 +27,8 @@ class EmomActivity: AppCompatActivity() {
     private var cuentaRegresiva: CountDownTimer? = null
     private var sonidoRonda: MediaPlayer? = null
     private var sonidoCompletado: MediaPlayer? = null
-
     private var sonidoMitad: MediaPlayer? = null
+    private var sonidoSegundosFinales: MediaPlayer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,9 +50,10 @@ class EmomActivity: AppCompatActivity() {
         val minutos = intent.getIntExtra("EMOM_MINUTOS", 0)
         val segundos = intent.getIntExtra("EMOM_SEGUNDOS", 0)
 
-        sonidoRonda = MediaPlayer.create(this, R.raw.alarm1)
+        sonidoRonda = MediaPlayer.create(this, R.raw.terminoronda)
         sonidoCompletado = MediaPlayer.create(this, R.raw.victoria)
         sonidoMitad = MediaPlayer.create(this, R.raw.mitad)
+        sonidoSegundosFinales = MediaPlayer.create(this, R.raw.segundos)
 
         rondasTotales = rondas
         milisPorRonda = ((minutos * 60) + segundos) * 1000L
@@ -97,15 +98,26 @@ class EmomActivity: AppCompatActivity() {
                 val mitadTiempo = milisPorRonda / 2
                 if (millisUntilFinished in (mitadTiempo - 500)..(mitadTiempo + 500)) {
                     sonidoMitad?.start()
-
-                }
+                    }
+                //Deteccion de los segundos finales
+                if (millisUntilFinished in 800..3200) {
+                    sonidoSegundosFinales?.let {
+                        if (it.isPlaying) it.seekTo(0)
+                        it.start()
+                        }
+                    }
             }
-
             override fun onFinish() {
                 barraProgreso.progress = barraProgreso.max
-                sonidoRonda?.start()
+
+                // Solo reproducir sonido de ronda si NO es la ultima
+                if (rondasRecorridas < rondasTotales) {
+                    sonidoRonda?.start()
+                }
                 startEmomRound()
             }
+
+
         }.start()
     }
 
@@ -122,6 +134,8 @@ class EmomActivity: AppCompatActivity() {
         sonidoRonda = null
         sonidoMitad?.release()
         sonidoMitad = null
+        sonidoSegundosFinales?.release()
+        sonidoSegundosFinales = null
     }
 
 }
