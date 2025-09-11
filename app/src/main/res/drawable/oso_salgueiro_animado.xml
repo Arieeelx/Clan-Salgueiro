@@ -2,7 +2,7 @@
 <animation-list xmlns:android="http://schemas.android.com/apk/res/android"
     android:oneshot="true">
 
-
+    <item android:drawable="@drawable/salgueirosplashcreen0" android:duration="2000"/>
     <item android:drawable="@drawable/salgueirosplashscreen" android:duration="1500"/>
     <item android:drawable="@drawable/salgueirosplashscreen2" android:duration="275"/>
     <item android:drawable="@drawable/salgueirosplashscreen3" android:duration="350"/>

@@ -96,7 +96,24 @@
                 android:text="00:00"
                 android:textSize="95sp"
                 android:textColor="@color/white"
-                android:fontFamily="cursive"/>
+                android:fontFamily="cursive"
+
+                android:clickable="true"
+                android:focusable="true"/>
+
+            <ImageView
+                android:id="@+id/img_pausa_emom"
+
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+
+                android:visibility="gone"
+                android:src="@drawable/pause"
+
+                android:contentDescription="Estado de pausa"
+                android:clickable="true"
+                android:focusable="true"/>
 
         </FrameLayout>
 

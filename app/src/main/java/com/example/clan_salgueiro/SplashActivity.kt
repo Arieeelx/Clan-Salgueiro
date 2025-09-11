@@ -23,6 +23,6 @@ class SplashActivity : AppCompatActivity() {
         imageView.postDelayed({
             startActivity(Intent(this, MainActivity::class.java))
             finish()
-        }, 2000)
+        }, 3000)
     }
 }

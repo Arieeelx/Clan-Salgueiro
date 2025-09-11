@@ -4,6 +4,9 @@ import android.content.Intent
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.view.View
+import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
@@ -21,6 +24,8 @@ class EmomActivity: AppCompatActivity() {
     private lateinit var tiempoTextViewTiempo: TextView
     private lateinit var barraProgreso: ProgressBar
 
+    private lateinit var imagenPausa: ImageView
+
     private var rondasRecorridas = 0
     private var rondasTotales = 0
     private var milisPorRonda: Long = 0
@@ -30,12 +35,48 @@ class EmomActivity: AppCompatActivity() {
     private var sonidoMitad: MediaPlayer? = null
     private var sonidoSegundosFinales: MediaPlayer? = null
 
+    private var pausado = false
+    private var tiempoRestante: Long = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Se declara que el color del statusbar sea negro
         window.statusBarColor = ContextCompat.getColor(this, R.color.black)
         window.decorView.systemUiVisibility = 0
         setContentView(R.layout.activity_emom)
+
+        //Implementacion del pause
+
+        imagenPausa = findViewById(R.id.img_pausa_emom)
+        tiempoTextViewTiempo = findViewById(R.id.text_temp_emom)
+        tiempoTextViewRonda = findViewById(R.id.textbox1_emom)
+        barraProgreso = findViewById(R.id.barraprogreso_emom)
+
+        // Listener para pausar desde el TextView
+        tiempoTextViewTiempo.setOnClickListener {
+            if (!pausado) {
+                cuentaRegresiva?.cancel()
+                pausado = true
+                tiempoTextViewTiempo.visibility = View.GONE
+                imagenPausa.visibility = View.VISIBLE
+                Toast.makeText(this, "Temporizador pausado", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        imagenPausa.setOnClickListener {
+            if (pausado) {
+                pausado = false
+                imagenPausa.visibility = View.GONE
+                tiempoTextViewTiempo.visibility = View.VISIBLE
+
+                if (tiempoRestante > 0) {
+                    startEmomRound(tiempoRestante)
+                    Toast.makeText(this, "Temporizador reanudado", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this, "No se puede reanudar: tiempo inválido", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
 
         //Se declara variable para el toolbar superior de poder volver atras
         val toolbarEmom = findViewById<Toolbar>(R.id.toolbar_emom)
@@ -69,7 +110,7 @@ class EmomActivity: AppCompatActivity() {
 
     }
 
-    private fun startEmomRound() {
+    private fun startEmomRound(tiempoInicial: Long = milisPorRonda) {
         if (rondasRecorridas >= rondasTotales) {
             sonidoCompletado?.start()
             Toast.makeText(this, "EMOM Terminado", Toast.LENGTH_SHORT).show()
@@ -83,14 +124,18 @@ class EmomActivity: AppCompatActivity() {
 
         cuentaRegresiva?.cancel()
 
-        cuentaRegresiva = object : CountDownTimer(milisPorRonda, 1000) {
+        cuentaRegresiva = object : CountDownTimer(tiempoInicial, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 val progreso = (milisPorRonda - millisUntilFinished).toInt()
                 barraProgreso.progress = progreso
 
                 //Deteccion de tiempos
+
+                tiempoRestante = millisUntilFinished
+
                 val segundosFaltantes = (millisUntilFinished / 1000) % 60
                 val minutosFaltantes = (millisUntilFinished / 1000) / 60
+
                 tiempoTextViewRonda.text = String.format("Ronda %d de %d", rondasRecorridas, rondasTotales)
                 tiempoTextViewTiempo.text = String.format("%02d:%02d", minutosFaltantes, segundosFaltantes)
 
@@ -127,6 +172,7 @@ class EmomActivity: AppCompatActivity() {
         return true
     }
 
+    //Destruccion de audios al reproducirse para no generar cache
     override fun onDestroy() {
         super.onDestroy()
         cuentaRegresiva?.cancel()
