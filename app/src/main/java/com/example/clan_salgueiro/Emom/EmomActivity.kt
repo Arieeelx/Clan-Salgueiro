@@ -11,6 +11,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import com.example.clan_salgueiro.R
@@ -33,12 +34,21 @@ class EmomActivity: AppCompatActivity() {
     private var sonidoRonda: MediaPlayer? = null
     private var sonidoCompletado: MediaPlayer? = null
     private var sonidoMitad: MediaPlayer? = null
+
+    private var sonidoMitadReproducido = false
     private var sonidoSegundosFinales: MediaPlayer? = null
+
+    private var ultimoSonidoSegundos: Long = 0L
 
     private var pausado = false
     private var tiempoRestante: Long = 0
 
+    private var tiempoInicio: Long = 0L
+
+    private var duracionActual: Long = 0L
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         super.onCreate(savedInstanceState)
         // Se declara que el color del statusbar sea negro
         window.statusBarColor = ContextCompat.getColor(this, R.color.black)
@@ -69,14 +79,16 @@ class EmomActivity: AppCompatActivity() {
                 imagenPausa.visibility = View.GONE
                 tiempoTextViewTiempo.visibility = View.VISIBLE
 
-                if (tiempoRestante > 0) {
-                    startEmomRound(tiempoRestante)
+                if (tiempoRestante > 1000) {
+                    reanudarTemporizador(tiempoRestante)
                     Toast.makeText(this, "Temporizador reanudado", Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(this, "No se puede reanudar: tiempo inválido", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Tiempo agotado", Toast.LENGTH_SHORT).show()
+                    startEmomRound()
                 }
             }
         }
+
 
         //Se declara variable para el toolbar superior de poder volver atras
         val toolbarEmom = findViewById<Toolbar>(R.id.toolbar_emom)
@@ -110,7 +122,13 @@ class EmomActivity: AppCompatActivity() {
 
     }
 
-    private fun startEmomRound(tiempoInicial: Long = milisPorRonda) {
+    private fun startEmomRound(tiempoInicial: Long = milisPorRonda, esRenaudacion: Boolean = false) {
+
+        tiempoInicio = System.currentTimeMillis()
+        duracionActual = tiempoInicial
+
+        sonidoMitadReproducido = false
+
         if (rondasRecorridas >= rondasTotales) {
             sonidoCompletado?.start()
             Toast.makeText(this, "EMOM Terminado", Toast.LENGTH_SHORT).show()
@@ -120,7 +138,9 @@ class EmomActivity: AppCompatActivity() {
             return
         }
 
-        rondasRecorridas++
+        if (!esRenaudacion) {
+            rondasRecorridas++
+        }
 
         cuentaRegresiva?.cancel()
 
@@ -131,7 +151,8 @@ class EmomActivity: AppCompatActivity() {
 
                 //Deteccion de tiempos
 
-                tiempoRestante = millisUntilFinished
+                tiempoRestante = duracionActual - (System.currentTimeMillis() - tiempoInicio)
+
 
                 val segundosFaltantes = (millisUntilFinished / 1000) % 60
                 val minutosFaltantes = (millisUntilFinished / 1000) / 60
@@ -141,18 +162,22 @@ class EmomActivity: AppCompatActivity() {
 
                 // Se agrega deteccion de mitad del tiempo
                 val mitadTiempo = milisPorRonda / 2
-                if (millisUntilFinished in (mitadTiempo - 500)..(mitadTiempo + 500)) {
+                if (!sonidoMitadReproducido && millisUntilFinished in (mitadTiempo - 500)..(mitadTiempo + 500)) {
                     sonidoMitad?.start()
-                    }
+                    sonidoMitadReproducido = true
+                }
+
                 //Deteccion de los segundos finales
                 if (millisUntilFinished in 800..3200) {
                     sonidoSegundosFinales?.let {
                         if (it.isPlaying) it.seekTo(0)
                         it.start()
-                        }
                     }
+                }
+
             }
-            override fun onFinish() {
+
+                override fun onFinish() {
                 barraProgreso.progress = barraProgreso.max
 
                 // Solo reproducir sonido de ronda si NO es la ultima
@@ -162,9 +187,64 @@ class EmomActivity: AppCompatActivity() {
                 startEmomRound()
             }
 
-
         }.start()
     }
+
+    private fun reanudarTemporizador(tiempo: Long) {
+        tiempoInicio = System.currentTimeMillis()
+        duracionActual = tiempo
+
+        sonidoMitadReproducido = false
+        ultimoSonidoSegundos = 0L
+
+        cuentaRegresiva?.cancel()
+
+        cuentaRegresiva = object : CountDownTimer(tiempo, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                tiempoRestante = duracionActual - (System.currentTimeMillis() - tiempoInicio)
+
+                val progreso = (milisPorRonda - tiempoRestante).toInt()
+                barraProgreso.progress = progreso
+
+                val segundosFaltantes = (tiempoRestante / 1000) % 60
+                val minutosFaltantes = (tiempoRestante / 1000) / 60
+
+                tiempoTextViewRonda.text = String.format("Ronda %d de %d", rondasRecorridas, rondasTotales)
+                tiempoTextViewTiempo.text = String.format("%02d:%02d", minutosFaltantes, segundosFaltantes)
+
+                //Deteccion de mitad del tiempo
+                val mitadTiempo = milisPorRonda / 2
+                if (!sonidoMitadReproducido && millisUntilFinished in (mitadTiempo - 500)..(mitadTiempo + 500)) {
+                    sonidoMitad?.start()
+                    sonidoMitadReproducido = true
+                }
+
+                //Deteccion de los segundos finales
+                val ahora = System.currentTimeMillis()
+                if (millisUntilFinished in 800..3200 && ahora - ultimoSonidoSegundos > 1000) {
+                    sonidoSegundosFinales?.let {
+                        if (it.isPlaying) it.seekTo(0)
+                        it.start()
+                        ultimoSonidoSegundos = ahora
+                    }
+                }
+
+
+
+            }
+
+            override fun onFinish() {
+                barraProgreso.progress = barraProgreso.max
+
+                if (rondasRecorridas < rondasTotales) {
+                    sonidoRonda?.start()
+                }
+
+                startEmomRound()
+            }
+        }.start()
+    }
+
 
     // Se aplica el procedimiento para volver atras
     override fun onSupportNavigateUp(): Boolean {

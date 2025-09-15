@@ -6,12 +6,14 @@ import android.os.PersistableBundle
 import android.widget.Button
 import android.widget.NumberPicker
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import com.example.clan_salgueiro.R
 
 class PrevEmomActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         super.onCreate(savedInstanceState)
         // Se declara que el color del statusbar sea negro
         window.statusBarColor = ContextCompat.getColor(this, R.color.black)

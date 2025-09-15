@@ -6,11 +6,15 @@ import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.clan_salgueiro.MainActivity
 import android.content.Intent
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import com.example.clan_salgueiro.R
 
 class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        //Aplica para que sea en modo oscuro toda la app
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+
         super.onCreate(savedInstanceState)
         window.statusBarColor = ContextCompat.getColor(this, R.color.black)
         window.decorView.systemUiVisibility = 0
