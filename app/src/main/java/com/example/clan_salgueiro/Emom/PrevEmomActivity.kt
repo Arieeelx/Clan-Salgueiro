@@ -2,7 +2,6 @@ package com.example.clan_salgueiro.Emom
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.widget.Button
 import android.widget.NumberPicker
 import androidx.appcompat.app.AppCompatActivity

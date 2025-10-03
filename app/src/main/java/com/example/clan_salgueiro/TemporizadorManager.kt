@@ -5,7 +5,6 @@ import android.media.MediaPlayer
 import android.os.CountDownTimer
 import android.os.Looper
 import android.os.Handler
-import androidx.core.os.postDelayed
 
 class TemporizadorManager(
     private val context: Context,
@@ -85,7 +84,7 @@ class TemporizadorManager(
                         } catch (e: Exception) {
                             2000L
                         }
-                        
+
                         Handler(Looper.getMainLooper()).postDelayed({
                             onFinalizado?.invoke()
                         }, duracionSegura)

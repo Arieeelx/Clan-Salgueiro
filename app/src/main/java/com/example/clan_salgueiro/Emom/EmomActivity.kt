@@ -36,7 +36,9 @@ class EmomActivity: AppCompatActivity() {
     private var pausado = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        //Aplica para que sea en modo oscuro toda la app
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+
         super.onCreate(savedInstanceState)
         // Se declara que el color del statusbar sea negro
         window.statusBarColor = ContextCompat.getColor(this, R.color.black)
